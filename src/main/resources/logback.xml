@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- 控制 log 文字格式 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 時間 | log 等級 | 執行緒 | 類別 | 訊息 -->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 關閉 Selenium / HttpClient 那些亂碼 log -->
+    <logger name="org.apache.hc" level="WARN"/>
+    <logger name="org.openqa.selenium.remote" level="WARN"/>
+    <logger name="org.openqa.selenium" level="INFO"/>
+    <logger name="org.apache.http" level="WARN"/>
+    <logger name="org.apache.commons" level="WARN"/>
+
+    <!-- 你的應用程式預設 log 等級 -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>
