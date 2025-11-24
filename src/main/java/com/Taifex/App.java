@@ -24,6 +24,7 @@ public class App {
     private static final ConfigReader config = new ConfigReader();
     private static WebDriver driver;
     private static WebDriverWait wait;
+
     public static void main(String[] args) throws IOException {
 
         String url = config.getURL();
@@ -33,17 +34,32 @@ public class App {
 
         // 讀取所有人的場地登記資料
         List<Players> players = CsvReader.readCsvToEntity(csvPath);
-//        System.out.println(players.toString());
+        System.out.println(players.toString());
 
         // 打開google chrome
         initializeDriver();
 
         //登入 google
-        GoogleLogin googleLogin = new GoogleLogin(driver, wait,googleAccount, googlePassword );
+        GoogleLogin googleLogin = new GoogleLogin(driver, wait, googleAccount, googlePassword);
         googleLogin.login();
 
-        // 填表格
-        FillGoogleForm.fillForm(driver,url,players);
+        for (Players player : players) {
+
+            // 填表格
+            FillGoogleForm.fillForm(driver, url, player);
+//        <div jsname="o6bZLc">
+//                    <input type="hidden" name="entry.2017521069" value="1">
+//                <input type="hidden" name="entry.409718117" value="2">
+//                <input type="hidden" name="entry.1827740217" value="3">
+//                <input type="hidden" name="entry.2108509654" value="活動中心2樓羽球場">
+//                <input type="hidden" name="entry.1260731127" value="星期1">
+//                <input type="hidden" name="entry.1881934078" value="08:00-10:00">
+//                <input type="hidden" name="dlut" value="1763995397714">
+//                </div>
+
+
+        }
+
 
     }
 
@@ -59,6 +75,9 @@ public class App {
             System.setProperty("webdriver.chrome.driver", driverPath);
 
             ChromeOptions options = new ChromeOptions();
+//            options.addArguments("user-data-dir=C:/Users/user/AppData/Local/Google/Chrome/User Data");
+//            options.addArguments("profile-directory=Default");
+
             options.addArguments("--disable-blink-features=AutomationControlled");
             options.addArguments("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36");
             options.addArguments("--disable-web-security");

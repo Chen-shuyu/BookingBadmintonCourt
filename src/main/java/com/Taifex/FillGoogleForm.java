@@ -9,7 +9,7 @@ import java.util.List;
 
 public class FillGoogleForm {
 
-    public static void fillForm(WebDriver driver, String formUrl, List<Players> players) {
+    public static void fillForm(WebDriver driver, String formUrl, Players players) {
         driver.get(formUrl);
 
         try {
