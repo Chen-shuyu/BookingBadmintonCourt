@@ -39,6 +39,10 @@ public class ConfigReader {
         return properties.getProperty("booking.info.csvPath");
     }
 
+    public String getPhone() {
+        return properties.getProperty("booking.info.phone");
+    }
+
     public String getGoogleAccount() {
         return properties.getProperty("google.login.account");
     }

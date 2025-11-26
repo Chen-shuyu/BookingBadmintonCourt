@@ -27,13 +27,13 @@ public class App {
 
     public static void main(String[] args) throws IOException {
 
-        String url = config.getURL();
+        String googleFormUrl = config.getURL();
         String csvPath = config.getCsvPath();
         String googleAccount = config.getGoogleAccount();
         String googlePassword = config.getGooglePassword();
 
         // 讀取所有人的場地登記資料
-        List<Players> players = CsvReader.readCsvToEntity(csvPath);
+        List<Players> players = CsvReader.readCsvToEntity(csvPath, config);
         System.out.println(players.toString());
 
         // 打開google chrome
@@ -44,20 +44,9 @@ public class App {
         googleLogin.login();
 
         for (Players player : players) {
-
+            driver.get(googleFormUrl);
             // 填表格
-            FillGoogleForm.fillForm(driver, url, player);
-//        <div jsname="o6bZLc">
-//                    <input type="hidden" name="entry.2017521069" value="1">
-//                <input type="hidden" name="entry.409718117" value="2">
-//                <input type="hidden" name="entry.1827740217" value="3">
-//                <input type="hidden" name="entry.2108509654" value="活動中心2樓羽球場">
-//                <input type="hidden" name="entry.1260731127" value="星期1">
-//                <input type="hidden" name="entry.1881934078" value="08:00-10:00">
-//                <input type="hidden" name="dlut" value="1763995397714">
-//                </div>
-
-
+            FillGoogleForm.fillForm(driver, player);
         }
 
 

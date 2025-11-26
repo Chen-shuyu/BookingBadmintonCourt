@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CsvReader {
 
-    public static List<Players> readCsvToEntity(String filePath) throws IOException {
+    public static List<Players> readCsvToEntity(String filePath, ConfigReader config) throws IOException {
         List<Players> list = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -32,6 +32,7 @@ public class CsvReader {
                 entity.setWeekNO(convertWeekdayToNumber(tokens[2].trim()));
                 entity.setTimeString(tokens[3].trim());
                 entity.setId5(tokens[4].trim());
+                entity.setPhone(config.getPhone());
                 list.add(entity);
             }
         }
