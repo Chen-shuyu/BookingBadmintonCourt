@@ -3,6 +3,7 @@ package com.Taifex;
 import com.Taifex.entity.Players;
 import com.Taifex.utility.ConfigReader;
 import com.Taifex.utility.CsvReader;
+import com.Taifex.utility.ProfileCopier;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -12,29 +13,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-
-/**
- * Hello world!
- */
 public class App {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
     private static final ConfigReader config = new ConfigReader();
     private static WebDriver driver;
     private static WebDriverWait wait;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 
-        String googleFormUrl = config.getURL();
+//        String googleFormUrl = config.getURL();
         String csvPath = config.getCsvPath();
+        String formUrlFile = "./form_url.txt";
         String googleAccount = config.getGoogleAccount();
         String googlePassword = config.getGooglePassword();
+        String profileMaster = "./profiles/master/";
+        String profileBase ="./profiles/user";
+
+
+        // 讀 Google 表單網址
+        String googleFormUrl = Files.readAllLines(Paths.get(formUrlFile)).get(0).trim();
 
         // 讀取所有人的場地登記資料
         List<Players> players = CsvReader.readCsvToEntity(csvPath, config);
-        System.out.println(players.toString());
+//        System.out.println(players.toString());
 
         // 打開google chrome
         initializeDriver();
@@ -43,12 +51,30 @@ public class App {
         GoogleLogin googleLogin = new GoogleLogin(driver, wait, googleAccount, googlePassword);
         googleLogin.login();
 
+        // 複製 profile：master → userN
+        for (int i = 0; i < players.size(); i++) {
+            String to = profileBase + (i + 1);
+            ProfileCopier.copyProfile(profileMaster, to);
+        }
+
+        // 建立 thread pool（建議可依 CPU 調整）
+        int threadCount = Math.min(6, players.size());
+        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+
+
+        // TODO 分配任務
         for (Players player : players) {
             driver.get(googleFormUrl);
             // 填表格
             FillGoogleForm.fillForm(driver, player);
         }
 
+
+        // 等待所有任務完成
+        pool.shutdown();
+        pool.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+
+        System.out.println("All forms submitted!");
 
     }
 
