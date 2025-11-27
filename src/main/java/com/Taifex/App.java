@@ -3,6 +3,7 @@ package com.Taifex;
 import com.Taifex.entity.Players;
 import com.Taifex.utility.ConfigReader;
 import com.Taifex.utility.CsvReader;
+import com.Taifex.utility.FormWorker;
 import com.Taifex.utility.ProfileCopier;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
@@ -63,11 +64,16 @@ public class App {
 
 
         // TODO 分配任務
-        for (Players player : players) {
-            driver.get(googleFormUrl);
-            // 填表格
-            FillGoogleForm.fillForm(driver, player);
+        for (int i = 0; i < players.size(); i++) {
+            String profilePath = profileBase + (i + 1);
+            Players p = players.get(i);
+            pool.execute(new FormWorker(profilePath, googleFormUrl, p));
         }
+//        for (Players player : players) {
+//            driver.get(googleFormUrl);
+//            // 填表格
+//            FillGoogleForm.fillForm(driver, player);
+//        }
 
 
         // 等待所有任務完成
@@ -85,13 +91,13 @@ public class App {
         try {
             logger.info("開始初始化 WebDriver...");
 
-            WebDriverManager.chromedriver().setup();
+//            WebDriverManager.chromedriver().setup();
             String driverPath = config.getChromeDriverPath();
             System.setProperty("webdriver.chrome.driver", driverPath);
 
             ChromeOptions options = new ChromeOptions();
-//            options.addArguments("user-data-dir=C:/Users/user/AppData/Local/Google/Chrome/User Data");
-//            options.addArguments("profile-directory=Default");
+            options.addArguments("user-data-dir=./profiles/master/");
+            options.addArguments("profile-directory=Default");
 
             options.addArguments("--disable-blink-features=AutomationControlled");
             options.addArguments("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36");
@@ -101,10 +107,10 @@ public class App {
             options.addArguments("--disable-dev-shm-usage");
 
             driver = new ChromeDriver(options);
-            wait = new WebDriverWait(driver, 20);
+//            wait = new WebDriverWait(driver, 20);
 
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+//            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+//            driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
             driver.manage().window().maximize();
 
             logger.info("WebDriver 初始化完成");
